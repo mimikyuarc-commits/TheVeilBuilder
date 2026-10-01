@@ -288,14 +288,33 @@ function showPreview(item, kind) {
 // ============================================================
 function initTabs() {
   const tabs = document.querySelectorAll('#tabs .tab');
+  const activate = (selectedTab, moveFocus = false) => {
+    const key = selectedTab.dataset.tab;
+    tabs.forEach(tab => {
+      const selected = tab === selectedTab;
+      tab.classList.toggle('active', selected);
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.panel === key);
+    });
+    if (moveFocus) selectedTab.focus();
+  };
+
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const key = tab.dataset.tab;
-      document.querySelectorAll('.tab-panel').forEach(p => {
-        p.classList.toggle('active', p.dataset.panel === key);
-      });
+    tab.addEventListener('click', () => activate(tab));
+    tab.addEventListener('keydown', event => {
+      const tabList = [...tabs];
+      const current = tabList.indexOf(tab);
+      let next = current;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % tabList.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + tabList.length) % tabList.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabList.length - 1;
+      else return;
+      event.preventDefault();
+      activate(tabList[next], true);
     });
   });
 }
@@ -1403,7 +1422,104 @@ function renderAll() {
 
   const pv = document.getElementById('prestigeValue');
   if (pv) pv.textContent = build.prestige;
+
+  const characterDetail = document.getElementById('characterDetail');
+  if (characterDetail) {
+    const race = database.races.find(item => item.id === build.raceId);
+    const mastery = database.masteries.find(item => item.id === build.masteryId);
+    if (race && mastery) {
+      characterDetail.textContent = `${race.name} · ${mastery.name}. Continue through Class, Gear, Weapons, Gem, and Tomes to finish your build.`;
+    } else if (race) {
+      characterDetail.textContent = 'Race selected. Choose a mastery to complete your character.';
+    } else if (mastery) {
+      characterDetail.textContent = 'Mastery selected. Choose a race to complete your character.';
+    } else {
+      characterDetail.textContent = 'Start here: choose your race and mastery. Your stats update as you build.';
+    }
+  }
 }
+
+function applyBuildData(loaded) {
+  if (!loaded || typeof loaded !== 'object' || Array.isArray(loaded)) {
+    throw new Error('Build data must be a JSON object.');
+  }
+
+  const savedNotes = typeof loaded.notes === 'string'
+    ? loaded.notes
+    : (build.notes || localStorage.getItem('veilBuilderInfo') || '');
+  build = { ...build, ...loaded, notes: savedNotes };
+  const loadedPrestige = Number(build.prestige);
+  build.prestige = Number.isFinite(loadedPrestige)
+    ? Math.min(MAX_PRESTIGE, Math.max(1, Math.floor(loadedPrestige)))
+    : 1;
+  accessoryEnchants = loaded.accessoryEnchants && typeof loaded.accessoryEnchants === 'object'
+    && !Array.isArray(loaded.accessoryEnchants)
+    ? loaded.accessoryEnchants
+    : {};
+  weaponEnchants = loaded.weaponEnchants && typeof loaded.weaponEnchants === 'object'
+    && !Array.isArray(loaded.weaponEnchants)
+    ? loaded.weaponEnchants
+    : {};
+  if (typeof build.name !== 'string') build.name = localStorage.getItem('veilBuilderName') || '';
+  if (!build.classId) build.classId = 'hybrid';
+  if (!Array.isArray(build.accessories)) build.accessories = [null, null, null, null, null, null];
+  if (!Array.isArray(build.weapons)) build.weapons = [null];
+  if (!Array.isArray(build.customModifiers)) build.customModifiers = [];
+  build.customModifiers = build.customModifiers.filter(modifier =>
+    modifier && typeof modifier.name === 'string' && typeof modifier.stat === 'string'
+    && Number.isFinite(Number(modifier.value))
+  ).map(modifier => ({
+    id: typeof modifier.id === 'string' ? modifier.id : `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    name: modifier.name.slice(0, 60),
+    stat: modifier.stat,
+    value: Number(modifier.value),
+  }));
+  build.accessories = build.accessories.slice(0, 6);
+  while (build.accessories.length < 6) build.accessories.push(null);
+  build.weapons = build.weapons.slice(0, 10);
+  if (build.weapons.length === 0) build.weapons = [null];
+  persistBuildName(build.name);
+  persistNotes(build.notes);
+  const buildNameInput = document.getElementById('buildNameInput');
+  if (buildNameInput) buildNameInput.value = build.name;
+  renderAll();
+}
+
+window.veilBuilder = {
+  getBuildData() {
+    const data = JSON.parse(JSON.stringify({
+      ...build,
+      customModifiers: Array.isArray(build.customModifiers) ? build.customModifiers : [],
+      accessoryEnchants,
+      weaponEnchants,
+    }));
+    delete data.notes;
+    return data;
+  },
+  exportBuild() {
+    const json = JSON.stringify({
+      ...build,
+      customModifiers: Array.isArray(build.customModifiers) ? build.customModifiers : [],
+      accessoryEnchants,
+      weaponEnchants,
+    }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const baseName = (build.name || 'veil_build').trim();
+    const safeName = baseName.replace(/[<>:"/\\|?*]+/g, '').trim() || 'veil_build';
+    a.download = `${safeName}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+  applyBuildData,
+  setBuildName(name) {
+    persistBuildName(name);
+    const input = document.getElementById('buildNameInput');
+    if (input) input.value = build.name;
+  },
+};
 
 // ============================================================
 // BOOT
@@ -1501,21 +1617,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnRandomBuild').onclick = generateRandomBuild;
 
   document.getElementById('btnSaveBuild').onclick = () => {
-    const json = JSON.stringify({
-      ...build,
-      customModifiers: Array.isArray(build.customModifiers) ? build.customModifiers : [],
-      accessoryEnchants,
-      weaponEnchants,
-    }, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    const baseName = (build.name || 'veil_build').trim();
-    const safeName = baseName.replace(/[<>:"/\\|?*]+/g, '').trim() || 'veil_build';
-    a.download = `${safeName}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    window.dispatchEvent(new CustomEvent('veil-save-requested'));
   };
 
   const buildFileInput = document.getElementById('buildFileInput');
@@ -1530,40 +1632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const text = await file.text();
       const loaded = JSON.parse(text);
-      build = { ...build, ...loaded };
-      const loadedPrestige = Number(build.prestige);
-      build.prestige = Number.isFinite(loadedPrestige)
-        ? Math.min(MAX_PRESTIGE, Math.max(1, Math.floor(loadedPrestige)))
-        : 1;
-      accessoryEnchants = loaded.accessoryEnchants && typeof loaded.accessoryEnchants === 'object'
-        ? loaded.accessoryEnchants
-        : {};
-      weaponEnchants = loaded.weaponEnchants && typeof loaded.weaponEnchants === 'object'
-        ? loaded.weaponEnchants
-        : {};
-      if (typeof build.name !== 'string') build.name = localStorage.getItem('veilBuilderName') || '';
-      if (typeof build.notes !== 'string') build.notes = localStorage.getItem('veilBuilderInfo') || '';
-      persistBuildName(build.name);
-      persistNotes(build.notes);
-      if (buildNameInput) buildNameInput.value = build.name;
-      if (!build.classId) build.classId = 'hybrid';
-      if (!Array.isArray(build.accessories)) build.accessories = [null, null, null, null, null, null];
-      if (!Array.isArray(build.weapons)) build.weapons = [null];
-      if (!Array.isArray(build.customModifiers)) build.customModifiers = [];
-      build.customModifiers = build.customModifiers.filter(modifier =>
-        modifier && typeof modifier.name === 'string' && typeof modifier.stat === 'string'
-        && Number.isFinite(Number(modifier.value))
-      ).map(modifier => ({
-        id: typeof modifier.id === 'string' ? modifier.id : `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-        name: modifier.name.slice(0, 60),
-        stat: modifier.stat,
-        value: Number(modifier.value),
-      }));
-      build.accessories = build.accessories.slice(0, 6);
-      while (build.accessories.length < 6) build.accessories.push(null);
-      build.weapons = build.weapons.slice(0, 10);
-      if (build.weapons.length === 0) build.weapons = [null];
-      renderAll();
+      applyBuildData(loaded);
       alert(`Build loaded from ${file.name}!`);
     } catch (e) {
       alert('Invalid JSON file: ' + e.message);
@@ -1579,4 +1648,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initGemSearch();
 
   renderAll();
+  if (new URLSearchParams(window.location.search).has('loadPublicBuild')) {
+    try {
+      const pendingBuild = sessionStorage.getItem('veilBuilderPendingPublicBuild');
+      if (pendingBuild) applyBuildData(JSON.parse(pendingBuild));
+    } catch (error) {
+      alert(`Could not load the selected public build: ${error.message}`);
+    } finally {
+      sessionStorage.removeItem('veilBuilderPendingPublicBuild');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('loadPublicBuild');
+      window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+    }
+  }
 });

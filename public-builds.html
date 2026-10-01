@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse and load public community builds for The Veil Builder.">
+  <title>Public Builds | The Veil Builder</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/x-icon" href="img/icon.ico">
+</head>
+
+<body class="public-builds-page">
+  <main class="public-builds-shell">
+    <header class="public-builds-header">
+      <a class="brand public-builds-brand" href="index.html">
+        <span class="brand-mark">◇</span>
+        <span class="brand-name">THE VEIL <em>BUILDER</em></span>
+      </a>
+      <a class="btn" href="index.html">Back to builder</a>
+    </header>
+
+    <section class="public-builds-content" aria-labelledby="publicBuildsTitle">
+      <div class="public-builds-heading">
+        <div>
+          <h1 id="publicBuildsTitle">PUBLIC BUILDS</h1>
+          <p class="cloud-description">Discover builds shared by the community. Load any build into the builder to try it out.</p>
+        </div>
+        <button class="btn" id="btnRefreshPublicBuilds" type="button">Refresh</button>
+      </div>
+      <p class="cloud-status" id="publicBuildsStatus" role="status" aria-live="polite">Loading public builds...</p>
+      <div class="public-build-grid" id="publicBuildList"></div>
+    </section>
+  </main>
+  <script src="js/public-builds.js"></script>
+</body>
+
+</html>

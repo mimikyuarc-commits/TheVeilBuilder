@@ -17,25 +17,49 @@
         <span class="brand-mark">◇</span>
         <span class="brand-name">THE VEIL <em>BUILDER</em></span>
       </div>
-      <nav class="tabs" id="tabs">
-        <button class="tab active" data-tab="character">Character</button>
-        <button class="tab" data-tab="class">Class</button>
-        <button class="tab" data-tab="gear">Gear</button>
-        <button class="tab" data-tab="weapons">Weapons</button>
-        <button class="tab" data-tab="gem">Gem</button>
-        <button class="tab" data-tab="tomes">Tomes</button>
+      <button class="profile-button" id="btnAccount" type="button" aria-label="Connect Discord account"
+        title="Discord account">
+        <svg class="profile-discord-icon" id="discordProfileIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M19.73 5.1a19.4 19.4 0 0 0-4.78-1.48.07.07 0 0 0-.08.04c-.2.36-.42.83-.58 1.2a18 18 0 0 0-5.4 0c-.16-.38-.38-.84-.59-1.2a.08.08 0 0 0-.08-.04A19.4 19.4 0 0 0 3.44 5.1a.07.07 0 0 0-.03.03C.37 9.56-.45 13.88.03 18.16c0 .02.01.04.03.05a19.6 19.6 0 0 0 5.87 2.97.08.08 0 0 0 .09-.03c.45-.62.85-1.28 1.2-1.97a.08.08 0 0 0-.04-.1 13 13 0 0 1-1.83-.88.08.08 0 0 1-.01-.13l.37-.29a.08.08 0 0 1 .08-.01c3.84 1.75 8 1.75 11.8 0a.08.08 0 0 1 .08.01l.37.3a.08.08 0 0 1-.01.13c-.58.34-1.2.63-1.84.87a.08.08 0 0 0-.04.11c.35.7.75 1.36 1.2 1.97a.08.08 0 0 0 .09.03 19.5 19.5 0 0 0 5.88-2.97.08.08 0 0 0 .03-.05c.57-4.95-.96-9.24-3.42-13.03a.06.06 0 0 0-.03-.03ZM8.02 14.84c-1.15 0-2.1-1.05-2.1-2.34s.93-2.34 2.1-2.34c1.18 0 2.12 1.06 2.1 2.34 0 1.29-.93 2.34-2.1 2.34Zm7.78 0c-1.15 0-2.1-1.05-2.1-2.34s.93-2.34 2.1-2.34c1.18 0 2.12 1.06 2.1 2.34 0 1.29-.92 2.34-2.1 2.34Z"/>
+        </svg>
+        <img class="profile-avatar" id="discordProfileAvatar" alt="" hidden>
+      </button>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Build sections">
+        <button class="tab active" id="tab-character" role="tab" aria-selected="true" aria-controls="panel-character" data-tab="character">Character</button>
+        <button class="tab" id="tab-class" role="tab" aria-selected="false" aria-controls="panel-class" data-tab="class" tabindex="-1">Class</button>
+        <button class="tab" id="tab-gear" role="tab" aria-selected="false" aria-controls="panel-gear" data-tab="gear" tabindex="-1">Gear</button>
+        <button class="tab" id="tab-weapons" role="tab" aria-selected="false" aria-controls="panel-weapons" data-tab="weapons" tabindex="-1">Weapons</button>
+        <button class="tab" id="tab-gem" role="tab" aria-selected="false" aria-controls="panel-gem" data-tab="gem" tabindex="-1">Gem</button>
+        <button class="tab" id="tab-tomes" role="tab" aria-selected="false" aria-controls="panel-tomes" data-tab="tomes" tabindex="-1">Tomes</button>
       </nav>
       <div class="topbar-actions">
-        <input id="buildNameInput" class="build-name-input" type="text" maxlength="80" placeholder="Build name"
-          value="">
-        <a href="https://www.roblox.com/users/1274066041/profile" target="_blank" rel="noopener noreferrer"><button
-            class="btn donate">Buy me a hat</button></a>
-        <button class="btn" id="btnNotes">Notes</button>
-        <button class="btn" id="btnInfo">Info</button>
-        <button class="btn" id="btnSaveBuild">Save</button>
-        <button class="btn" id="btnLoadBuild">Load</button>
-        <button class="btn" id="btnRandomBuild" title="Generate a random build">Random Build</button>
-        <button class="btn danger" id="btnResetBuild">Reset</button>
+        <div class="toolbar-group build-primary-controls">
+          <label class="toolbar-label" for="buildNameInput">Current build</label>
+          <div class="toolbar-button-row">
+            <input id="buildNameInput" class="build-name-input" type="text" maxlength="80" placeholder="Name your build"
+              value="">
+            <button class="btn btn-primary" id="btnSaveBuild">Save</button>
+            <button class="btn" id="btnLoadBuild">Import</button>
+          </div>
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-label">Builder</span>
+          <div class="toolbar-button-row">
+            <button class="btn btn-random" id="btnRandomBuild" title="Generate a random build">Randomize</button>
+            <button class="btn" id="btnNotes">Notes</button>
+            <button class="btn" id="btnInfo">Info</button>
+            <button class="btn danger" id="btnResetBuild">Reset</button>
+          </div>
+        </div>
+        <div class="toolbar-group toolbar-community">
+          <span class="toolbar-label">Community</span>
+          <div class="toolbar-button-row">
+            <button class="btn" id="btnCloudBuilds">My cloud builds</button>
+            <a class="btn public-builds-link" href="public-builds.html">Explore builds</a>
+            <a class="toolbar-donate" href="https://www.roblox.com/users/1274066041/profile" target="_blank"
+              rel="noopener noreferrer">Support the creator</a>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -46,7 +70,7 @@
       <section class="options-panel" id="optionsPanel">
 
         <!-- CHARACTER TAB -->
-        <div class="tab-panel active" data-panel="character">
+        <div class="tab-panel active" id="panel-character" role="tabpanel" aria-labelledby="tab-character" data-panel="character">
           <div class="field-row">
             <label class="field-label">Race</label>
             <select id="raceSelect" class="field-select"></select>
@@ -62,11 +86,11 @@
             <label class="field-label">Mastery</label>
             <select id="masterySelect" class="field-select"></select>
           </div>
-          <div class="hover-detail" id="characterDetail"></div>
+          <div class="hover-detail" id="characterDetail" aria-live="polite"></div>
         </div>
 
         <!-- CLASS TAB -->
-        <div class="tab-panel" data-panel="class">
+        <div class="tab-panel" id="panel-class" role="tabpanel" aria-labelledby="tab-class" data-panel="class">
           <div class="field-row">
             <label class="field-label">Class</label>
             <select id="classSelect" class="field-select"></select>
@@ -88,7 +112,7 @@
         </div>
 
         <!-- GEAR TAB: Accessories + Outfit -->
-        <div class="tab-panel" data-panel="gear">
+        <div class="tab-panel" id="panel-gear" role="tabpanel" aria-labelledby="tab-gear" data-panel="gear">
           <div class="subsection-title">Accessories <span class="badge" id="accessoryCount">0/6</span></div>
           <div class="slot-row" id="accessorySlots"></div>
           <div class="search-row">
@@ -108,14 +132,14 @@
         </div>
 
         <!-- WEAPONS TAB -->
-        <div class="tab-panel" data-panel="weapons">
+        <div class="tab-panel" id="panel-weapons" role="tabpanel" aria-labelledby="tab-weapons" data-panel="weapons">
           <div class="subsection-title">Weapons <span class="badge" id="weaponCount">0/10</span></div>
           <div class="slot-row" id="weaponSlots"></div>
           <div id="weaponSearchSections"></div>
         </div>
 
         <!-- GEM TAB -->
-        <div class="tab-panel" data-panel="gem">
+        <div class="tab-panel" id="panel-gem" role="tabpanel" aria-labelledby="tab-gem" data-panel="gem">
           <div class="subsection-title">Gem <span class="badge" id="gemBadge">None</span></div>
           <div class="slot-row" id="gemSlots"></div>
           <div class="search-row">
@@ -125,7 +149,7 @@
         </div>
 
         <!-- TOMES TAB -->
-        <div class="tab-panel" data-panel="tomes">
+        <div class="tab-panel" id="panel-tomes" role="tabpanel" aria-labelledby="tab-tomes" data-panel="tomes">
           <div class="subsection-title">Tomes</div>
           <div id="tomesContent"></div>
         </div>
@@ -226,33 +250,66 @@
     </div>
   </div>
 
+  <div class="info-modal" id="accountModal" hidden>
+    <div class="info-dialog cloud-dialog" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+      <div class="info-dialog-header">
+        <h2 id="accountTitle">DISCORD ACCOUNT</h2>
+        <button class="info-close" data-close-modal="accountModal" aria-label="Close account">&times;</button>
+      </div>
+      <p class="cloud-description">Connect your Discord account to keep builds in the cloud and manage your public builds.</p>
+      <p class="cloud-status" id="accountStatus" role="status">Checking account...</p>
+      <div class="cloud-actions">
+        <button class="btn cloud-primary" id="btnDiscordLogin">Connect Discord</button>
+        <button class="btn" id="btnAccountCloudBuilds">Your cloud builds</button>
+        <button class="btn" id="btnDiscordLogout" hidden>Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal" id="saveOptionsModal" hidden>
+    <div class="info-dialog cloud-dialog save-options-dialog" role="dialog" aria-modal="true" aria-labelledby="saveOptionsTitle">
+      <div class="info-dialog-header">
+        <h2 id="saveOptionsTitle">SAVE BUILD</h2>
+        <button class="info-close" data-close-modal="saveOptionsModal" aria-label="Close save options">&times;</button>
+      </div>
+      <p class="cloud-description">Choose where to save this build.</p>
+      <div class="save-option-list">
+        <button class="save-option" id="btnSaveLocal" type="button">
+          <span class="save-option-title">Download JSON</span>
+          <span class="save-option-description">Save a build file to this device.</span>
+        </button>
+        <button class="save-option" id="btnSaveToCloud" type="button">
+          <span class="save-option-title">Save to cloud</span>
+          <span class="save-option-description">Save privately or publish it to the public gallery.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-modal" id="cloudModal" hidden>
+    <div class="info-dialog cloud-dialog" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
+      <div class="info-dialog-header">
+        <h2 id="cloudTitle">YOUR CLOUD BUILDS</h2>
+        <button class="info-close" data-close-modal="cloudModal" aria-label="Close cloud builds">&times;</button>
+      </div>
+      <p class="cloud-description">Cloud saves are private unless you choose to publish one. Build notes stay on this device.</p>
+      <div class="cloud-save-controls">
+        <label class="cloud-publish-toggle">
+          <input type="checkbox" id="cloudPublishToggle">
+          <span>Publish this build in the public gallery</span>
+        </label>
+        <button class="btn cloud-primary" id="btnSaveCloudBuild">Save current build</button>
+      </div>
+      <p class="cloud-status" id="cloudStatus" role="status"></p>
+      <div class="cloud-build-list" id="cloudBuildList"></div>
+    </div>
+  </div>
+
   <script src="js/database.js"></script>
   <script src="js/stats.js"></script>
   <script src="js/damage.js"></script>
   <script src="js/ui.js"></script>
-  <script>
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-      apiKey: "AIzaSyDhtyXOj_rQYwqfEBuLbtlbOB5yPLCAVak",
-      authDomain: "theveilbuilder.firebaseapp.com",
-      projectId: "theveilbuilder",
-      storageBucket: "theveilbuilder.firebasestorage.app",
-      messagingSenderId: "12941890931",
-      appId: "1:12941890931:web:24ee6a980e519bd32c2106",
-      measurementId: "G-S7PP2LCXNJ"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-  </script>
+  <script src="js/cloud-ui.js"></script>
 </body>
 
 </html>
