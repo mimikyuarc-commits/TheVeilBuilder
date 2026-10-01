@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/publicbuilds",
+      "destination": "/public-builds.html"
+    }
+  ]
+}
