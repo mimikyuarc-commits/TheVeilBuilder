@@ -87,6 +87,7 @@ function calculateStats(build, accessoryEnchants, weaponEnchants, options) {
     extraSummons: 0,
     resistance: 0,
     attackSpeed: 0,
+    critical: 0,
     speed: 0,
     jump: 0,
     heal: 0,

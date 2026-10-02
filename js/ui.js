@@ -99,6 +99,7 @@ const statDisplayNames = {
   blindResistance: 'Blind Resistance',
   fireResistance: 'Fire Resistance',
   attackSpeed: 'Attack Speed',
+  critical: 'Critical Boost',
   speed: 'Speed',
   jump: 'Jump',
   knockback: 'Knockback',
@@ -1305,6 +1306,7 @@ function renderStatsPanel() {
     <div class="stat-divider"></div>
     <div class="stat-group">
       <div class="stat-row"><span class="stat-label">Attack Speed</span><span class="stat-value">${formatStatValue(stats.attackSpeed)}%</span></div>
+      <div class="stat-row"><span class="stat-label">Critical Boost</span><span class="stat-value">${formatStatValue(stats.critical)}%</span></div>
       <div class="stat-row"><span class="stat-label">Speed</span><span class="stat-value">${formatStatValue(stats.speed)}%</span></div>
       <div class="stat-row"><span class="stat-label">Jump</span><span class="stat-value">${formatStatValue(stats.jump)}%</span></div>
       <div class="stat-row"><span class="stat-label">Knockback</span><span class="stat-value">${formatStatValue(stats.knockback)}%</span></div>
