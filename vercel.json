@@ -3,6 +3,10 @@
     {
       "source": "/publicbuilds",
       "destination": "/public-builds.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
     }
   ]
 }

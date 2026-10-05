@@ -38,11 +38,11 @@ function requireSameOrigin(req, res) {
   return true;
 }
 
-function readJsonBody(req, res, maxBytes = 40_000) {
+function readJsonBody(req, res, maxBytes = 40_000, oversizedMessage = 'The build is too large to save.') {
   let body = req.body;
   if (typeof body === 'string') {
     if (Buffer.byteLength(body, 'utf8') > maxBytes) {
-      sendJson(res, 413, { error: 'The build is too large to save.' });
+      sendJson(res, 413, { error: oversizedMessage });
       return null;
     }
     try {
@@ -57,7 +57,7 @@ function readJsonBody(req, res, maxBytes = 40_000) {
     return null;
   }
   if (Buffer.byteLength(JSON.stringify(body), 'utf8') > maxBytes) {
-    sendJson(res, 413, { error: 'The build is too large to save.' });
+    sendJson(res, 413, { error: oversizedMessage });
     return null;
   }
   return body;

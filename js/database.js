@@ -411,3 +411,7 @@ const database = {
                 { id: "iridescent_gem", name: "Iridescent Gem", description: "Imbues weapon with Iridescent, where it can apply a random status effect out of this selection: Fire, Poison, Lightning, Ice, Light, Bleed, Rot, Azure Fire, Star Fire, Shadow Fire, Wet, or Shade.", rarity: "legendary", icon: "", image: "", category: "gem", stats: {}, stat: "", value: 0 }
         ],
 };
+
+window.siteContentReady.then(() => {
+        window.siteContentApplyBuilder(database);
+});

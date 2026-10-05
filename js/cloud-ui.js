@@ -157,6 +157,35 @@
       }
     }));
 
+    if (options.updatable) {
+      actions.appendChild(makeButton('Update', async () => {
+        if (!window.confirm(`Replace "${build.name}" with your current build?`)) return;
+        try {
+          const data = window.veilBuilder.getBuildData();
+          const name = String(data.name || build.name || '').trim();
+          if (!name) {
+            setStatus(cloudStatus, 'Give this build a name before updating it.');
+            document.getElementById('buildNameInput').focus();
+            return;
+          }
+          await apiRequest(`/api/builds/${encodeURIComponent(build.id)}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              name,
+              isPublic: Boolean(build.is_public),
+              data,
+            }),
+          });
+          cloudBuildId = build.id;
+          publishToggle.checked = Boolean(build.is_public);
+          await refreshCloudBuilds();
+          setStatus(cloudStatus, `"${name}" updated in your cloud saves.`);
+        } catch (error) {
+          setStatus(cloudStatus, error.message);
+        }
+      }));
+    }
+
     if (options.deletable) {
       actions.appendChild(makeButton('Delete', async () => {
         if (!window.confirm(`Delete "${build.name}" from your cloud saves?`)) return;
@@ -191,6 +220,7 @@
         isPublic: build.is_public,
         author: build.author,
         avatarUrl: build.avatar_url,
+        updatable: true,
         deletable: true,
       }));
     } catch (error) {

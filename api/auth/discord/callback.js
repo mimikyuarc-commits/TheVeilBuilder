@@ -11,15 +11,28 @@ const {
   signSession,
 } = require('../../_lib/session');
 
+const PRODUCTION_ORIGIN = 'https://www.theveilbuilder.com';
+const PRODUCTION_REDIRECT_URI = `${PRODUCTION_ORIGIN}/api/auth/discord/callback`;
+
 function redirectWithError(res, code) {
   res.statusCode = 302;
   res.setHeader('Cache-Control', 'no-store');
-  res.setHeader('Location', `/?authError=${encodeURIComponent(code)}`);
+  const origin = process.env.VERCEL_ENV === 'production' ? PRODUCTION_ORIGIN : '';
+  res.setHeader('Location', `${origin}/?authError=${encodeURIComponent(code)}`);
   res.end();
 }
 
 module.exports = async function finishDiscordAuth(req, res) {
   if (!allowMethods(req, res, ['GET'])) return;
+  if (process.env.VERCEL_ENV === 'production'
+      && String(req.headers.host || '').toLowerCase() !== 'www.theveilbuilder.com') {
+    const query = new URLSearchParams(req.query).toString();
+    res.statusCode = 302;
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Location', `${PRODUCTION_ORIGIN}/api/auth/discord/callback${query ? `?${query}` : ''}`);
+    res.end();
+    return;
+  }
   const stateCookie = getCookie(req, STATE_COOKIE);
   const stateQuery = typeof req.query.state === 'string' ? req.query.state : '';
   clearCookie(res, STATE_COOKIE);
@@ -35,8 +48,11 @@ module.exports = async function finishDiscordAuth(req, res) {
   }
 
   const code = typeof req.query.code === 'string' ? req.query.code : '';
-  const { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI } = process.env;
-  if (!code || !DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_REDIRECT_URI) {
+  const { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } = process.env;
+  const redirectUri = process.env.VERCEL_ENV === 'production'
+    ? PRODUCTION_REDIRECT_URI
+    : process.env.DISCORD_REDIRECT_URI;
+  if (!code || !DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !redirectUri) {
     redirectWithError(res, 'auth_not_configured');
     return;
   }
@@ -50,7 +66,7 @@ module.exports = async function finishDiscordAuth(req, res) {
         client_secret: DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: DISCORD_REDIRECT_URI,
+        redirect_uri: redirectUri,
       }),
     });
     if (!tokenResponse.ok) throw new Error(`Discord token exchange failed (${tokenResponse.status}).`);
@@ -86,7 +102,7 @@ module.exports = async function finishDiscordAuth(req, res) {
     setCookie(res, SESSION_COOKIE, signSession(profile.id), SESSION_MAX_AGE);
     res.statusCode = 302;
     res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Location', '/');
+    res.setHeader('Location', process.env.VERCEL_ENV === 'production' ? `${PRODUCTION_ORIGIN}/` : '/');
     res.end();
   } catch (error) {
     console.error('[discord-auth] Sign-in failed:', error);

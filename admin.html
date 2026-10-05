@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" class="admin-document">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage The Veil Builder's data and cloud builds.">
+  <title>Admin | The Veil Builder</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" type="image/x-icon" href="img/icon.ico">
+</head>
+
+<body class="admin-page">
+  <div class="admin-shell">
+    <header class="admin-header">
+      <a class="brand admin-brand" href="/" aria-label="The Veil Builder home">
+        <span class="brand-mark">◇</span>
+        <span class="brand-name">THE VEIL <em>BUILDER</em></span>
+      </a>
+      <nav class="admin-header-links" aria-label="Site navigation">
+        <a class="btn btn-primary" href="/">Open builder</a>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-hero">
+        <div>
+          <p class="admin-eyebrow">Site management</p>
+          <h1>ADMIN PANEL</h1>
+          <p class="admin-intro">Edit shared builder data and manage community cloud builds. Build updates keep the original creator unchanged.</p>
+        </div>
+      </section>
+
+      <section id="adminGate" class="admin-gate" role="status">
+        <p id="adminGateMessage"></p>
+        <a id="adminLogin" class="btn btn-primary" href="/api/auth/discord/start" hidden>Sign in with Discord</a>
+        <button id="adminRetry" class="btn" type="button">Try again</button>
+      </section>
+
+      <section id="adminApp" hidden>
+        <div class="admin-toolbar">
+          <label>Data type
+            <select id="adminType">
+              <option value="builder">Builder data</option>
+              <option value="builds">Cloud builds</option>
+            </select>
+          </label>
+          <label id="adminCollectionLabel">Collection
+            <select id="adminCollection"></select>
+          </label>
+          <label class="admin-filter">Find an entry
+            <input id="adminSearch" type="search" placeholder="Search names, descriptions, or creators">
+          </label>
+          <button class="btn btn-primary" id="adminAdd" type="button">Add entry</button>
+          <button class="btn" id="adminRefreshBuilds" type="button" hidden>Refresh builds</button>
+          <button class="btn" id="adminLoadMoreBuilds" type="button" hidden>Load more builds</button>
+        </div>
+        <p id="adminStatus" class="admin-status" role="status" aria-live="polite"></p>
+        <div class="admin-layout">
+          <aside class="admin-entry-panel">
+            <h2>Entries <span id="adminEntryCount"></span></h2>
+            <div id="adminEntries" class="admin-entry-list"></div>
+          </aside>
+          <section class="admin-editor-panel">
+            <div id="adminEmpty" class="admin-empty">Select an entry or add a new one.</div>
+            <form id="adminForm" hidden>
+              <div class="admin-editor-heading">
+                <div>
+                  <p class="admin-eyebrow" id="adminEditorCategory"></p>
+                  <h2 id="adminEditorName">Edit entry</h2>
+                </div>
+                <button class="btn danger" id="adminDelete" type="button">Remove entry</button>
+              </div>
+              <div class="admin-image-tools">
+                <img id="adminImagePreview" alt="" hidden>
+                <label>Upload an image
+                  <input id="adminImageUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+                </label>
+                <span>PNG, JPEG, WebP, or GIF · max 3 MB</span>
+              </div>
+              <div id="adminFields" class="admin-fields"></div>
+              <div class="admin-add-field">
+                <label>New field name<input id="adminNewFieldName" type="text" maxlength="80" placeholder="e.g. source"></label>
+                <label>Initial JSON value<input id="adminNewFieldValue" type="text" value="&quot;&quot;" placeholder="JSON value"></label>
+                <button class="btn" id="adminAddField" type="button">Add field</button>
+              </div>
+              <div class="admin-form-actions">
+                <button class="btn btn-primary" type="submit">Save changes</button>
+                <span id="adminSaveHint">Saved changes update the live site.</span>
+              </div>
+            </form>
+            <form id="adminBuildForm" hidden>
+              <div class="admin-editor-heading">
+                <div>
+                  <p class="admin-eyebrow">Cloud build · <span id="adminBuildCreator"></span></p>
+                  <h2 id="adminBuildNameHeading">Edit build</h2>
+                </div>
+                <button class="btn danger" id="adminBuildDelete" type="button">Delete build</button>
+              </div>
+              <label class="admin-build-name">Build name
+                <input id="adminBuildName" type="text" maxlength="80" required>
+              </label>
+              <label class="admin-build-public">
+                <input id="adminBuildPublic" type="checkbox">
+                Public in the community gallery
+              </label>
+              <div id="adminBuildDataEditor" class="admin-build-data-editor"></div>
+              <div class="admin-form-actions">
+                <button class="btn btn-primary" type="submit">Update build</button>
+                <span>Creator identity is preserved.</span>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/site-content.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

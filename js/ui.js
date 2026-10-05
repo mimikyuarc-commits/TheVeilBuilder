@@ -1526,7 +1526,8 @@ window.veilBuilder = {
 // ============================================================
 // BOOT
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.siteContentReady;
   initTabs();
   build.name = localStorage.getItem('veilBuilderName') || '';
   build.notes = localStorage.getItem('veilBuilderInfo') || '';

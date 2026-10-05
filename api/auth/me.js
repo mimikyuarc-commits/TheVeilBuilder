@@ -1,6 +1,7 @@
 const { getFirestore } = require('../_lib/db');
 const { allowMethods, sendJson } = require('../_lib/http');
 const { readSession } = require('../_lib/session');
+const { isConfiguredAdmin } = require('../_lib/admin');
 
 module.exports = async function getCurrentUser(req, res) {
   if (!allowMethods(req, res, ['GET'])) return;
@@ -23,6 +24,7 @@ module.exports = async function getCurrentUser(req, res) {
         username: user.username,
         displayName: user.displayName,
         avatarUrl: user.avatarUrl,
+        isAdmin: isConfiguredAdmin(session.discordId),
       },
     });
   } catch (error) {
