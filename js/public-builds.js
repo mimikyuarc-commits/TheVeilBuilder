@@ -62,7 +62,7 @@
         loadButton.addEventListener('click', () => {
           try {
             sessionStorage.setItem('veilBuilderPendingPublicBuild', JSON.stringify(build.data));
-            window.location.assign('index.html?loadPublicBuild=1');
+            window.location.assign('/?loadPublicBuild=1');
           } catch (error) {
             status.textContent = `Could not prepare this build: ${error.message}`;
           }

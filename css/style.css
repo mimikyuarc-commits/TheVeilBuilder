@@ -252,15 +252,20 @@ body {
 }
 
 .toolbar-donate {
-  padding: 0.35rem 0.1rem;
-  color: #8f95a2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.2rem;
+  color: #c1cbbb;
   font: 0.62rem Georgia, serif;
   text-decoration: none;
   white-space: nowrap;
+  transition: color 180ms ease;
 }
 
-.toolbar-donate:hover {
-  color: #d5d8df;
+.toolbar-donate:hover,
+.toolbar-donate:focus-visible {
+  color: #e1e9d6;
   text-decoration: underline;
 }
 
@@ -2150,9 +2155,6 @@ textarea:focus-visible {
   box-shadow: 0 7px 20px rgba(126, 56, 51, 0.2);
 }
 
-.toolbar-donate { transition: color 180ms ease, transform 180ms var(--veil-ease); }
-.toolbar-donate:hover { transform: translateY(-1px); color: var(--veil-accent); text-decoration: none; }
-
 .workspace { gap: clamp(0.55rem, 1vw, 0.9rem); }
 .stat-row { padding: 0.17rem 0; font-size: 0.79rem; }
 .stat-label { color: #a4ada3; }
@@ -2308,19 +2310,27 @@ textarea:focus-visible {
 }
 
 .info-close {
-  display: grid;
+  display: flex;
   width: 2.1rem;
   height: 2.1rem;
-  place-items: center;
-  border: 1px solid transparent;
-  border-radius: 9px;
-  transition: transform 180ms var(--veil-ease), color 180ms ease, border-color 180ms ease, background 180ms ease;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.08em;
+  border: 0;
+  background: transparent;
+  color: #aeb4a5;
+  font: 1.5rem/1 Arial, sans-serif;
+  transition: color 180ms ease;
 }
 
 .info-close:hover {
-  transform: rotate(90deg);
-  border-color: var(--veil-line);
-  background: rgba(255, 255, 255, 0.05);
+  color: #f3f7ea;
+}
+
+.info-close:focus-visible {
+  outline: 2px solid rgba(182, 209, 143, 0.55);
+  outline-offset: 2px;
+  border-radius: 4px;
   color: #f3f7ea;
 }
 

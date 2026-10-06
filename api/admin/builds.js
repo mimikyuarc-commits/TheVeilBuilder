@@ -44,7 +44,23 @@ module.exports = async function listBuilds(req, res) {
       nextCursor: result.docs.length > 200 ? page[page.length - 1].ref.path : null,
     });
   } catch (error) {
+    const isMissingIndex = error
+      && (error.code === 9 || error.code === '9' || error.code === 'failed-precondition')
+      && /index/i.test(String(error.message || ''));
+    if (isMissingIndex) {
+      sendJson(res, 503, {
+        error: 'Cloud-build listing needs a Firestore index. Deploy firestore.indexes.json and try again.',
+      });
+      return;
+    }
     console.error('[admin-builds] Unable to list cloud builds:', error);
-    sendJson(res, 500, { error: 'Unable to load cloud builds right now.' });
+    const details = error && typeof error.message === 'string'
+      ? error.message.trim().slice(0, 500)
+      : '';
+    sendJson(res, 500, {
+      error: details
+        ? `Unable to load cloud builds: ${details}`
+        : 'Unable to load cloud builds right now. Check the Vercel function logs for details.',
+    });
   }
 };
